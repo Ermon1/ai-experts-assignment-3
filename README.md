@@ -1,64 +1,64 @@
 # AI Experts Assignment (Python)
 
-This assignment evaluates your ability to:
+This repository contains my solution to the AI Experts Python assignment. I set up a small project that runs reliably, pinned dependencies, reproduced a real bug with tests, and fixed it with a minimal, reviewable change.
 
-- set up a small Python project to run reliably (locally + in Docker),
-- pin dependencies for reproducible installs,
-- write focused tests to reproduce a bug,
-- implement a minimal, reviewable fix.
+## What I implemented
 
-## What you will do
+- A `Dockerfile` that installs dependencies from `requirements.txt` and runs the test suite by default with `CMD ["pytest", "-v"]`.
+- A pinned `requirements.txt` including `pytest`, `requests`, and `python-dateutil`.
+- Application code in `app/` for an HTTP client and OAuth2 tokens.
+- Tests in `tests/` that exercise the HTTP client behavior and the token handling, including the bug I found and fixed.
+- `Explanation.md` describing the bug, why it happened, why my fix works, and one realistic edge case I did not cover with tests.
 
-### 1) Dockerfile (required)
+## How I run the tests locally
 
-Create a `Dockerfile` so the project can run the test suite in a non-interactive, CI-style environment.
+I developed and tested this project with Python 3.12.3 on my machine.
 
-Requirements:
+From the project root:
 
-- requirements.txt exists and is used during build (pip install -r requirements.txt)
-- pytest must be included/pinned in requirements.txt
-- The image must run tests by default (use: `CMD ["python", "-m", "pytest", "-v"]`).
-- The build must install dependencies from `requirements.txt`.
+1. I create and activate a virtual environment:
 
-### 2) requirements.txt (required)
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate
+   ```
 
-Create a `requirements.txt` with pinned versions, using this format:
+2. I install the pinned dependencies:
 
-- `package==x.y.z`
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-### 3) README updates (required)
+3. I run the test suite:
 
-Update this README to include:
+   ```bash
+   pytest -v
+   ```
 
-- how to run the tests locally,
-- how to build and run tests with Docker.
+## How I run the tests with Docker
 
-### 4) Find + fix a bug (required)
+In Docker, the project runs on Python 3.12, using the `python:3.12-slim` base image.
 
-There is a bug somewhere in this repository.
+From the project root:
 
-Your tasks:
+1. I build the Docker image:
 
-- Identify the bug.
-- Apply the smallest possible fix to make the tests pass.
-- Keep the change minimal and reviewable (no refactors).
+   ```bash
+   docker build -t ai-experts-assignment .
+   ```
 
-## Constraints
+2. I run the container, which executes the tests by default:
 
-- Keep changes minimal and reviewable.
-- Do not refactor unrelated code.
-- Do not introduce extra tooling unless required.
-- You may add tests and the smallest code change needed to fix the bug.
+   ```bash
+   docker run --rm ai-experts-assignment
+   ```
 
-### 5) EXPLANATION.md (required)
+The container’s default command is `pytest -v`, so running the container executes the full test suite in a clean, non-interactive environment.
 
-Create `EXPLANATION.md` (max 250 words) containing:
+## Bug I found and fixed
 
-- **What was the bug?**
-- **Why did it happen?**
-- **Why does your fix solve it?**
-- **One realistic case / edge case your tests still don’t cover**
+There was a bug in the HTTP `Client.request` method when `oauth2_token` was stored as a plain dictionary instead of as an `OAuth2Token`. In that case, the client did not refresh the token and did not send a proper `Authorization` header on API requests.
 
-## Submission
+I wrote tests in `tests/test_http_client.py` that reproduce this behavior and then made the smallest possible change in `app/http_client.py` to ensure the client refreshes whenever the token is missing, not an `OAuth2Token`, or expired.
 
-- Submit a public GitHub repository URL containing your solution to the Google form link provided.
+More detail on the bug and fix is in `Explanation.md`.
