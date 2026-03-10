@@ -12,4 +12,4 @@ My new condition refreshes whenever `oauth2_token` is not an `OAuth2Token` insta
 
 ## One realistic edge case my tests do not cover
 
-My tests do not cover the case where `oauth2_token` is a valid, unexpired `OAuth2Token` but the underlying access token is revoked server-side while still within its expiry window.
+My tests do not cover the case where `oauth2_token` is a valid, unexpired `OAuth2Token` but the underlying access token is revoked server-side while still within its expiry window, because handling that properly would require changing the design to detect and react to server-side revocation, which is beyond the minimal fix requested in this assignment.
